@@ -64,8 +64,8 @@ Seu objetivo é criar testes unitários completos e eficazes para funções Pyth
 """
 
 # --- Interface do Streamlit ---
-st.set_page_config(page_title="PyUnit Scribe - Chatbot com Google Gemini", page_icon="🤖")
-st.title("🤖 PyUnit Scribe")
+st.set_page_config(page_title="Guardian AI - Chatbot com Google Gemini", page_icon="🤖")
+st.title("🤖 Guardian AI")
 st.write("Seu assistente de IA para a geração automática de testes unitários em Python.")
 st.write("Cole sua função Python abaixo e obtenha o código de teste com unittest instantaneamente.")
 
