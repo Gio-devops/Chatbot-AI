@@ -1,6 +1,6 @@
-# 🤖 PyUnit Scribe: Gerador de Testes Unitários com IA
+# 🤖 Guardian AI: Gerador de Testes Unitários com IA
 
-**PyUnit Scribe** é um agente de IA generativa que automatiza a criação de testes unitários para funções Python. Utilizando o poder da API Gemini do Google, esta ferramenta analisa seu código e gera testes completos com a biblioteca `unittest`, acelerando o ciclo de desenvolvimento e melhorando a qualidade do software.
+**Guardian AI** é um agente de IA generativa que automatiza a criação de testes unitários para funções Python. Utilizando o poder da API Gemini do Google, esta ferramenta analisa seu código e gera testes completos com a biblioteca `unittest`, acelerando o ciclo de desenvolvimento e melhorando a qualidade do software.
 
 Este projeto não é apenas uma aplicação de IA, mas um ecossistema completo que incorpora práticas de DevOps, como Infraestrutura como Código (IaC), containerização e um pipeline de CI/CD para simular um ambiente de desenvolvimento profissional.
 
@@ -35,7 +35,7 @@ Escrever testes unitários é uma prática essencial para garantir a robustez e 
 
 ### A Solução
 
-**PyUnit Scribe** atua como um engenheiro de QA assistente. Ele automatiza a parte mais trabalhosa da escrita de testes, analisando a lógica, os casos de uso e os possíveis pontos de falha de uma função para gerar um conjunto de testes abrangente. Isso libera o tempo do desenvolvedor para focar na lógica de negócio.
+**Guardian AI** atua como um engenheiro de QA assistente. Ele automatiza a parte mais trabalhosa da escrita de testes, analisando a lógica, os casos de uso e os possíveis pontos de falha de uma função para gerar um conjunto de testes abrangente. Isso libera o tempo do desenvolvedor para focar na lógica de negócio.
 
 ### ✨ Funcionalidades
 
@@ -75,9 +75,8 @@ Certifique-se de que você tem as seguintes ferramentas instaladas:
 ### Configuração Inicial Passo a Passo
 
 1.  **Clone o Repositório**
-    Abra seu terminal e clone este projeto.
     ```bash
-    git clone [https://github.com/Gio-devops/Chatbot-AI.git](https://github.com/Gio-devops/Chatbot-AI.git)
+    git clone https://github.com/Gio-devops/Chatbot-AI.git
     ```
 
 2.  **Navegue até o Diretório do Projeto**
@@ -92,29 +91,23 @@ Certifique-se de que você tem as seguintes ferramentas instaladas:
     -   Copie a chave gerada. **Mantenha-a em segurança!**
 
 4.  **Crie e Configure o Arquivo de Variáveis de Ambiente (`.env`)**
-    Este arquivo armazena sua chave de API de forma segura, sem expô-la no código.
-    
-    *No Linux ou macOS:*
     ```bash
+    # Linux/macOS
     touch .env
-    ```
-    *No Windows (usando PowerShell):*
-    ```bash
+
+    # Windows (PowerShell)
     New-Item -ItemType File .env
     ```
-    
-    Abra o arquivo `.env` recém-criado e adicione o seguinte conteúdo, substituindo `SUA_CHAVE_API_AQUI` pela chave que você copiou:
+    Adicione no `.env`:
     ```
     GEMINI_API_KEY="SUA_CHAVE_API_AQUI"
     ```
-    > **Segurança:** O arquivo `.env` está listado no `.gitignore`, então ele nunca será enviado para o repositório Git.
 
 5.  **Instale as Dependências do Python**
-    Usamos um `Makefile` para simplificar os comandos. Este comando criará um ambiente virtual (se não existir) e instalará todas as bibliotecas do `requirements.txt`.
     ```bash
     make install
     ```
-    *(Alternativamente, sem o make: `pip install -r requirements.txt`)*
+    *(Alternativamente: `pip install -r requirements.txt`)*
 
 ---
 
@@ -122,8 +115,78 @@ Certifique-se de que você tem as seguintes ferramentas instaladas:
 
 ### 1. Execução Local Padrão (para desenvolvimento)
 
-Este é o modo mais rápido para testar mudanças no código.
-
-**Comando:**
 ```bash
 make run
+```
+
+Inicia o servidor Streamlit local.
+
+Acesse http://localhost:8501 no navegador.
+
+2. Execução com Docker (ambiente padronizado)
+Passo 1: Construir a Imagem
+
+bash
+Copiar código
+make docker-build
+Passo 2: Rodar o Container
+
+bash
+Copiar código
+make docker-run
+Acesse http://localhost:8501.
+
+3. Ambiente de Desenvolvimento Remoto com GitHub Codespaces
+Crie um Codespace a partir do repositório.
+
+Configure sua GEMINI_API_KEY como segredo no Codespaces.
+
+Execute:
+
+bash
+Copiar código
+make run
+O Codespaces abrirá a porta exposta em uma nova aba.
+
+🏛️ Infraestrutura como Código (IaC) com Terraform
+bash
+Copiar código
+cd terraform
+terraform init
+terraform plan
+Simula criação de instância EC2 e grupo de segurança (sem custo real sem credenciais AWS).
+
+🧪 Testes e Qualidade de Código
+Rodar testes (pytest):
+
+bash
+Copiar código
+make test
+Rodar linter (Ruff):
+
+bash
+Copiar código
+make lint
+🔄 Pipeline de CI/CD
+Definido em .github/workflows/pipeline.yml. Executa automaticamente em push/pull request para main:
+
+✅ Checkout
+
+🐍 Setup Python
+
+📦 Install Dependencies
+
+🔎 Lint (Ruff)
+
+🧪 Testes (pytest)
+
+🐳 Docker Build (simulação)
+
+📜 Referência de Comandos (Makefile)
+Comando	Descrição
+make install	Instala todas as dependências do requirements.txt.
+make lint	Executa o linter Ruff para verificar a qualidade do código.
+make test	Executa os testes automatizados com pytest.
+make run	Inicia a aplicação Streamlit localmente.
+make docker-build	Constrói a imagem Docker da aplicação com a tag pyunit-scribe.
+make docker-run	Inicia um container Docker a partir da imagem, expondo a porta 8501.
