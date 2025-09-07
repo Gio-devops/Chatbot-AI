@@ -1,123 +1,109 @@
-# 1. Imports essenciais
 import streamlit as st
-import os
 import google.generativeai as genai
+import os
 from dotenv import load_dotenv
 
-# 2. Configuração da Página (Aba do Navegador)
-# Deve ser o primeiro comando Streamlit do seu script!
-# Configuração da página (deve ser a primeira coisa depois dos imports)
-# Esta função permite personalizar a aparência da aplicação
-st.set_page_config(
-    page_title="Chatbot com Google Gemini",  # Título que aparece na aba do navegador
-    page_icon="🤖",                          # Ícone da aba do navegador
-    layout="wide",                           # Layout amplo ou centralizado
-    initial_sidebar_state="expanded"         # Sidebar expandida ou colapsada
-)
-
-# 3. Carregamento e Verificação da API Key
+# Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# Verificar se a API Key está presente
-if not GEMINI_API_KEY:
-    st.error("🔑 API Key não encontrada. Verifique o arquivo .env.")
+# Configura a API Key do Gemini
+try:
+    genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+except Exception as e:
+    st.error(f"Erro ao configurar a API do Gemini. Verifique sua API_KEY: {e}")
     st.stop()
 
-# 4. Configuração da API do Gemini
-genai.configure(api_key=GEMINI_API_KEY)
+# --- Configuração do Modelo Generativo ---
+# Define as configurações de geração de conteúdo
+generation_config = {
+    "temperature": 0.4,
+    "top_p": 1,
+    "top_k": 32,
+    "max_output_tokens": 4096,
+}
 
-# Função para INICIALIZAR o modelo com configurações específicas
-def init_gemini():
-    generation_config = {
-        "temperature": 0.7,
-        "top_p": 0.8,
-        "top_k": 40,
-        "max_output_tokens": 2048,
-    }
-    
-    model = genai.GenerativeModel(
-        model_name="gemini-1.5-flash",
-        generation_config=generation_config
-    )
-    return model
+# Define as configurações de segurança
+safety_settings = [
+    {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+    {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+    {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+]
 
-# Função para gerar resposta do chatbot# Função para GERAR uma resposta, com tratamento de erros
-    try:
-        response = model.generate_content(prompt)
-        return response.text
-    except Exception as e:
-        return f"Erro ao gerar resposta: {str(e)}"
+# Inicializa o modelo
+model = genai.GenerativeModel(
+    model_name="gemini-1.5-flash-latest",
+    generation_config=generation_config,
+    safety_settings=safety_settings
+)
 
-# Configuração da sidebar apenas com estatísticas
-with st.sidebar:
-    st.header("⚙️ Configurações")
-    
-    if st.button("🗑️ Limpar Conversa"):
-        if 'messages' in st.session_state:
-            st.session_state.messages = []
-            st.rerun()
-    
-    st.divider()
-    st.subheader("📊 Estatísticas")
-    if 'messages' in st.session_state:
-        st.metric("Mensagens trocadas", len(st.session_state.messages))
+# --- PROMPT para o Agente de IA ---
+# Este prompt instrui o modelo sobre como ele deve se comportar
+prompt_template = """
+Você é um especialista em testes de software e engenharia de qualidade (QA) para a linguagem Python.
+Seu objetivo é criar testes unitários completos e eficazes para funções Python, utilizando a biblioteca `unittest`.
+
+**Instruções:**
+1.  Analise a função Python fornecida pelo usuário.
+2.  Identifique os principais cenários a serem testados:
+    * **Caminho Feliz:** Teste com entradas válidas e esperadas.
+    * **Casos Extremos (Edge Cases):** Teste com valores limites, como 0, -1, listas vazias, strings vazias, etc.
+    * **Casos de Erro:** Teste como a função se comporta com entradas inválidas (ex: tipos de dados incorretos), esperando que exceções como `TypeError` ou `ValueError` sejam levantadas.
+3.  Gere um código Python completo que importe a biblioteca `unittest` e a função a ser testada (assuma que a função está em um arquivo chamado `main.py`).
+4.  Crie uma classe de teste que herde de `unittest.TestCase`.
+5.  Dentro da classe, crie métodos de teste claros e descritivos para cada cenário identificado. Use os métodos de asserção do `unittest` (ex: `assertEqual`, `assertTrue`, `assertRaises`).
+6.  Inclua o boilerplate `if __name__ == '__main__': unittest.main()` para que o script seja executável.
+7.  Retorne **APENAS** o código do teste, sem explicações adicionais, a menos que seja solicitado.
+
+**Função a ser testada:**
+```python
+{user_code}
+```
+
+**Código do Teste Unitário:**
+"""
+
+# --- Interface do Streamlit ---
+st.set_page_config(page_title="PyUnit Scribe - Chatbot com Google Gemini", page_icon="🤖")
+st.title("🤖 PyUnit Scribe")
+st.write("Seu assistente de IA para a geração automática de testes unitários em Python.")
+st.write("Cole sua função Python abaixo e obtenha o código de teste com unittest instantaneamente.")
+
+# Área de texto para o usuário inserir o código
+user_code = st.text_area("Cole sua função Python aqui:", height=200, placeholder="def somar(a, b):\n    return a + b")
+
+if st.button("Gerar Testes Unitários"):
+    if user_code:
+        with st.spinner("Analisando sua função e gerando testes..."):
+            try:
+                # Formata o prompt com o código do usuário
+                prompt = prompt_template.format(user_code=user_code)
+
+                # Chama a API do Gemini para gerar o conteúdo
+                response = model.generate_content(prompt)
+
+                # Exibe o resultado
+                st.subheader("✅ Testes Gerados com Sucesso!")
+                st.code(response.text, language='python')
+
+            except Exception as e:
+                st.error(f"Ocorreu um erro ao gerar os testes: {e}")
     else:
-        st.metric("Mensagens trocadas", 0)
+        st.warning("Por favor, insira o código de uma função Python para gerar os testes.")
 
-# Inicializar o modelo
-if 'model' not in st.session_state:
-    with st.spinner("🔄 Inicializando modelo Gemini..."):
-        st.session_state.model = init_gemini()
-
-# Interface do usuário principal
-st.title("🤖 Chatbot com Google Gemini")
-st.write("Bem-vindo ao seu assistente virtual inteligente!")
-
-# Exemplo de como os alunos podem personalizar ainda mais
-st.markdown("""
-<style>
-    .main > div {
-        padding-top: 2rem;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# 1. Inicializa o histórico de mensagens se for a primeira execução
-if 'messages' not in st.session_state:
-    st.session_state.messages = []
-    # Mensagem de boas-vindas personalizada
-    st.session_state.messages.append({
-        "role": "assistant",
-        "content": """👋 Olá! Eu sou seu assistente virtual powered by Google Gemini. 
-
-Posso ajudar você com:
-- ❓ Responder perguntas gerais
-- 💻 Explicar conceitos de programação
-- 📝 Criar e revisar textos
-- 🧮 Resolver problemas matemáticos
-- 🎨 Ideias criativas
-
-Como posso ajudar você hoje?"""
-    })
-
-# 2. Loop que exibe CADA mensagem guardada no histórico
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
-# Input do usuário
-if prompt := st.chat_input("💬 Digite sua mensagem aqui..."):
-    # Adicionar mensagem do usuário
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
-    
-    # Gerar resposta do assistente
-    with st.chat_message("assistant"):
-        with st.spinner("🤔 Pensando..."):
-            response = generate_response(st.session_state.model, prompt)
-            st.markdown(response)
-    
-    # Adicionar resposta ao histórico
-    st.session_state.messages.append({"role": "assistant", "content": response})
+st.sidebar.header("Sobre o Projeto")
+st.sidebar.info(
+    "Este é um projeto da disciplina de IA Generativa, projetado para resolver um "
+    "problema prático de engenharia de software usando a API Gemini do Google."
+)
+st.sidebar.markdown("---")
+st.sidebar.header("Exemplo de Função para Testar")
+st.sidebar.code("""
+def calcular_fatorial(n):
+    if not isinstance(n, int) or n < 0:
+        raise ValueError("A entrada deve ser um inteiro não negativo")
+    if n == 0:
+        return 1
+    else:
+        return n * calcular_fatorial(n - 1)
+""", language='python')
