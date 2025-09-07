@@ -76,12 +76,12 @@ Certifique-se de que você tem as seguintes ferramentas instaladas:
 
 1.  **Clone o Repositório**
     ```bash
-    git clone https://github.com/Gio-devops/Chatbot-AI.git
+    git clone https://github.com/Gio-devops/projeto-final-ia.git
     ```
 
 2.  **Navegue até o Diretório do Projeto**
     ```bash
-    cd Chatbot-AI
+    cd projeto-final-ia/
     ```
 
 3.  **Obtenha sua Chave de API do Gemini**
