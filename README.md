@@ -21,7 +21,7 @@ Acelerar o desenvolvimento de software e melhorar a qualidade do código, reduzi
 1.  **Clone o repositório:**
     ```bash
     git clone <url-do-seu-repositorio>
-    cd projeto-final-ia
+    cd Chatbot-AI
     ```
 
 2.  **Instale as dependências:**
