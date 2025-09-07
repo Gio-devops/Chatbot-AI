@@ -119,74 +119,74 @@ Certifique-se de que você tem as seguintes ferramentas instaladas:
 make run
 ```
 
-Inicia o servidor Streamlit local.
+- Inicia o servidor Streamlit local.  
+- Acesse [http://localhost:8501](http://localhost:8501) no navegador.
 
-Acesse http://localhost:8501 no navegador.
+---
 
-2. Execução com Docker (ambiente padronizado)
-Passo 1: Construir a Imagem
+### 2. Execução com Docker (ambiente padronizado)
 
-bash
-Copiar código
+**Passo 1: Construir a Imagem**
+```bash
 make docker-build
-Passo 2: Rodar o Container
+```
 
-bash
-Copiar código
+**Passo 2: Rodar o Container**
+```bash
 make docker-run
-Acesse http://localhost:8501.
+```
+Acesse [http://localhost:8501](http://localhost:8501).
 
-3. Ambiente de Desenvolvimento Remoto com GitHub Codespaces
-Crie um Codespace a partir do repositório.
+### 3. Ambiente de Desenvolvimento Remoto com GitHub Codespaces
 
-Configure sua GEMINI_API_KEY como segredo no Codespaces.
-
-Execute:
-
-bash
-Copiar código
+1. Crie um Codespace a partir do repositório.  
+2. Configure sua `GEMINI_API_KEY` como segredo no Codespaces.  
+3. Execute:
+```bash
 make run
+```
 O Codespaces abrirá a porta exposta em uma nova aba.
 
-🏛️ Infraestrutura como Código (IaC) com Terraform
-bash
-Copiar código
+## 🏛️ Infraestrutura como Código (IaC) com Terraform
+
+```bash
 cd terraform
 terraform init
 terraform plan
+```
 Simula criação de instância EC2 e grupo de segurança (sem custo real sem credenciais AWS).
 
-🧪 Testes e Qualidade de Código
-Rodar testes (pytest):
+## 🧪 Testes e Qualidade de Código
 
-bash
-Copiar código
+**Rodar testes (pytest):**
+```bash
 make test
-Rodar linter (Ruff):
+```
+**Rodar linter (Ruff):**
 
-bash
-Copiar código
+```bash
 make lint
-🔄 Pipeline de CI/CD
-Definido em .github/workflows/pipeline.yml. Executa automaticamente em push/pull request para main:
+```
 
-✅ Checkout
+## 🔄 Pipeline de CI/CD
 
-🐍 Setup Python
+Definido em `.github/workflows/pipeline.yml`.  
+Executa automaticamente em **push/pull request** para a branch `main`:
 
-📦 Install Dependencies
+- ✅ Checkout  
+- 🐍 Setup Python  
+- 📦 Install Dependencies  
+- 🔎 Lint (Ruff)  
+- 🧪 Testes (pytest)  
+- 🐳 Docker Build (simulação)  
 
-🔎 Lint (Ruff)
+## 📜 Referência de Comandos (Makefile)
 
-🧪 Testes (pytest)
-
-🐳 Docker Build (simulação)
-
-📜 Referência de Comandos (Makefile)
-Comando	Descrição
-make install	Instala todas as dependências do requirements.txt.
-make lint	Executa o linter Ruff para verificar a qualidade do código.
-make test	Executa os testes automatizados com pytest.
-make run	Inicia a aplicação Streamlit localmente.
-make docker-build	Constrói a imagem Docker da aplicação com a tag pyunit-scribe.
-make docker-run	Inicia um container Docker a partir da imagem, expondo a porta 8501.
+| Comando            | Descrição                                                            |
+| ------------------ | -------------------------------------------------------------------- |
+| `make install`     | Instala todas as dependências do `requirements.txt`.                 |
+| `make lint`        | Executa o linter Ruff para verificar a qualidade do código.          |
+| `make test`        | Executa os testes automatizados com pytest.                          |
+| `make run`         | Inicia a aplicação Streamlit localmente.                             |
+| `make docker-build`| Constrói a imagem Docker da aplicação com a tag `pyunit-scribe`.     |
+| `make docker-run`  | Inicia um container Docker a partir da imagem, expondo a porta 8501. |
