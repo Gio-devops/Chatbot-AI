@@ -19,7 +19,7 @@ test:
 	pytest
 
 run:
-	streamlit run main.py
+	python3 -m streamlit run main.py
 
 docker-build:
 	docker build -t pyunit-scribe .
