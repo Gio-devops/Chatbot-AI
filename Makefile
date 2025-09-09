@@ -22,7 +22,7 @@ run:
 	python3 -m streamlit run main.py
 
 docker-build:
-	docker build -t pyunit-scribe .
+	docker build -t guardian-ai .
 
 docker-run:
 	docker run -p 8501:8501 -e GEMINI_API_KEY=$(shell grep GEMINI_API_KEY .env | cut -d '=' -f2) pyunit-scribe
