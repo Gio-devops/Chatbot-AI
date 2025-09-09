@@ -188,5 +188,5 @@ Executa automaticamente em **push/pull request** para a branch `main`:
 | `make lint`        | Executa o linter Ruff para verificar a qualidade do código.          |
 | `make test`        | Executa os testes automatizados com pytest.                          |
 | `make run`         | Inicia a aplicação Streamlit localmente.                             |
-| `make docker-build`| Constrói a imagem Docker da aplicação com a tag `pyunit-scribe`.     |
+| `make docker-build`| Constrói a imagem Docker da aplicação com a tag `guardian-ai`.     |
 | `make docker-run`  | Inicia um container Docker a partir da imagem, expondo a porta 8501. |
